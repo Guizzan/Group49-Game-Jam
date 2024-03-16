@@ -52,6 +52,14 @@ namespace Guizzan
                     CamMode
                 }
             }
+            namespace Guns
+            {
+                public enum GunInputs
+                {
+                    Shoot,
+                    Reload
+                }
+            }
         }
     }
 }

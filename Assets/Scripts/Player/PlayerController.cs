@@ -2,15 +2,25 @@ using System.Collections;
 using UnityEngine;
 using Guizzan.Input.GIM;
 using Guizzan.Input.GIM.Player;
-using System.Threading.Tasks;
 
 public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInputs>
 {
     private GuizzanInputManager GIM;
     private Animator _animator;
-    private Player _player;
 
+    [Header(">>>>>>>>>>>>> Bools <<<<<<<<<<<<<")]
     public bool RootMotion = true;
+    public bool enableMove = true;
+    public bool enableLook = true;
+    public bool enablePhysics = true;
+    public bool canAttack = false;
+    public bool enableIK = false;
+
+    [Header(">>>>>>>>>>>>> Transforms <<<<<<<<<<<<<")]
+    public Transform HeadRotator;
+    public Transform headTarget;
+    public Transform leftHandTarget;
+    public Transform rightHandTarget;
 
     [HideInInspector]
     public float Speed;
@@ -39,12 +49,11 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     private MovingPlatformHandler _platform;
 
     [Header(">>>>>>>>>>>>> Look Parameters <<<<<<<<<<<<<")]
-    public float smoothing = 2;
-    public float fpsLookLimit;
-    public float tpsLookLimit;
+    public float Smoothing = 2;
+    public float UpLookLimit;
+    public float DownLookLimit;
     private Vector2 _currentMouseLook;
     private Vector2 _appliedMouseDelta;
-    private bool _fpsMode = false;
 
     [Header(">>>>>>>>>>>>> Runtime Parameters <<<<<<<<<<<<<")]
     public Vector3 _velocity;
@@ -65,7 +74,6 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     private CharacterController _controller;
     private IEnumerator JumpRoutine;
     private IEnumerator FallCrouchRoutine;
-    private Task FpsModeChange;
     private ControllerColliderHit Hit;
     private bool godMode;
     private Vector3 PlatformLastVel;
@@ -73,12 +81,10 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     public RaycastHit SurfaceHit;
     private void Start()
     {
-        _player = GetComponent<Player>();
         _platform = gameObject.AddComponent<MovingPlatformHandler>();
         GIM = GuizzanInputManager.Instance;
         GIM._playerController = this;
         GIM.InputMode = InputModes.Player;
-        FpsModeChange = CamModeTask(FpsMode);
         _controller = GetComponent<CharacterController>();
         _initialHeight = _controller.height;
         _crouchHeight = CrouchHeight;
@@ -88,13 +94,13 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
 
     private void OnAnimatorIK(int layerIndex)
     {
-        if (Player.enableIK)
+        if (enableIK)
         {
             _animator.SetLookAtWeight(1);
-            _animator.SetLookAtPosition(_player.headTarget.position);
-            _animator.SetIKPosition(AvatarIKGoal.LeftHand, _player.leftHandTarget.position);
+            _animator.SetLookAtPosition(headTarget.position);
+            _animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandTarget.position);
             _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-            _animator.SetIKPosition(AvatarIKGoal.RightHand, _player.rightHandTarget.position);
+            _animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandTarget.position);
             _animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
         }
         else
@@ -108,10 +114,10 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     private void Update()
     {
 
-        if (!Player.enablePhysics) return;
+        if (!enablePhysics) return;
         _isWalking = false;
         Physics.Raycast(transform.position + Vector3.up, Vector3.down, out SurfaceHit, PlayerMask);
-        if (Player.enableMove)
+        if (enableMove)
         {
             if (Vector2.Distance(Vector2.zero, GIM.MovementVector) >= 0.1f && !_isRunning && !IsFalling) _isWalking = true;
             _AnimationLerp = Vector2.MoveTowards(_AnimationLerp, GIM.MovementVector, Time.deltaTime * MovementLerp);
@@ -134,24 +140,22 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
             _isLanded = true;
         }
         _wasFalling = IsFalling;
-        if (Player.enableLook)
+        if (enableLook)
         {
-            Vector2 smoothMouseDelta = Vector2.Scale(GIM.LookVectorDelta / 20, Vector2.one * smoothing);
+            Vector2 smoothMouseDelta = Vector2.Scale(GIM.LookVectorDelta / 20, Vector2.one * Smoothing);
             smoothMouseDelta = new Vector2(smoothMouseDelta.x * GIM.SensitivityX(), smoothMouseDelta.y * GIM.SensitivityY());
-            _appliedMouseDelta = Vector2.Lerp(_appliedMouseDelta, smoothMouseDelta, 1 / smoothing);
+            _appliedMouseDelta = Vector2.Lerp(_appliedMouseDelta, smoothMouseDelta, 1 / Smoothing);
             _currentMouseLook += _appliedMouseDelta;
-            float lookLimit = FpsMode ? fpsLookLimit : tpsLookLimit;
-            _currentMouseLook.y = Mathf.Clamp(_currentMouseLook.y, -lookLimit, lookLimit);
+            _currentMouseLook.y = Mathf.Clamp(_currentMouseLook.y, -DownLookLimit, UpLookLimit);
         }
-        _player.HeadRotator.transform.localRotation = Quaternion.AngleAxis(-_currentMouseLook.y, Vector3.right);
+        HeadRotator.transform.localRotation = Quaternion.AngleAxis(-_currentMouseLook.y, Vector3.right);
         transform.localRotation = Quaternion.AngleAxis(_currentMouseLook.x, Vector3.up);
-
         if (!RootMotion && !godMode)
             _rootMotion += ((transform.forward * _AnimationLerp.y) + (transform.right * _AnimationLerp.x)) / Time.deltaTime * 0.00025f * Speed;
     }
     private void FixedUpdate() // Physics calculations
     {
-        if (!Player.enablePhysics) return;
+        if (!enablePhysics) return;
 
         if (godMode)
         {
@@ -222,7 +226,7 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     }
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (!Player.enablePhysics) return;
+        if (!enablePhysics) return;
         float hitAngle = Vector3.Angle(Vector3.up, hit.normal);
         Hit = hit;
         if (hitAngle >= _controller.slopeLimit && hitAngle <= 80) ApplyGravity = true;
@@ -243,17 +247,6 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
         _rootMotion += _animator.deltaPosition;
     }
 
-
-    public bool FpsMode
-    {
-        get { return _fpsMode; }
-        set
-        {
-            _fpsMode = value;
-            if (FpsModeChange == null) return;
-            if (FpsModeChange.IsCompleted) FpsModeChange = CamModeTask(value);
-        }
-    }
     private bool ApplyGravity
     {
         get { return _applyGravity; }
@@ -336,27 +329,8 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
                 }
                 if (_isCrouching) _isRunning = false;
                 break;
-            case PlayerInputs.CamMode:
-                FpsMode = !FpsMode;
-                break;
         }
 
-    }
-
-    private async Task CamModeTask(bool isFpsMode)
-    {
-        if (isFpsMode)
-        {
-            _player.ThirdPersonCam.SetActive(false);
-            _player.FirstPersonCam.SetActive(true);
-            await Task.Delay(400);
-            _player.SetVisibility(Guizzan.Player.VisibilityModes.FirstPerson);
-            return;
-        }
-        _player.ThirdPersonCam.SetActive(true);
-        _player.FirstPersonCam.SetActive(false);
-        _player.SetVisibility(Guizzan.Player.VisibilityModes.ThirdPerson);
-        await Task.Delay(400);
     }
 
     IEnumerator FallCrouch()
@@ -371,7 +345,7 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
 
     private void Jump()
     {
-        if (!ApplyGravity && JumpRoutine == null && Player.enablePhysics && Player.enableMove)
+        if (!ApplyGravity && JumpRoutine == null && enablePhysics &&  enableMove)
         {
             ApplyGravity = true;
             _isJumping = true;

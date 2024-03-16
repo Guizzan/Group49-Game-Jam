@@ -227,10 +227,8 @@ public class GuizzanInputManager : MonoBehaviour
         {
             if (_controls.Player.PrimaryButton.phase == InputActionPhase.Performed)
             {
-                if (Player.canAttack)
-                {
 
-                }
+                
             }
 
             if (_controls.Player.PrimaryButton.phase == InputActionPhase.Waiting) // Button Up

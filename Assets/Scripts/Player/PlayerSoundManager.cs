@@ -37,7 +37,8 @@ public class PlayerSoundManager : BaseSoundEvent
         if (_controller == null) return;
         if (type != "Landing" && (_controller._isJumping || _controller._isFalling)) return;
         if (type == "WalkingStep") type = _controller._isRunning ? "RunningStep" : _controller._isCrouching ? "CrouchingStep" : type;
-        var surfaceLayer = _controller.SurfaceHit.collider.gameObject.layer;
+        int surfaceLayer = _controller.SurfaceHit.collider != null ? _controller.SurfaceHit.collider.gameObject.layer : 0;
+
         switch (type)
         {
             case "WalkingStep":

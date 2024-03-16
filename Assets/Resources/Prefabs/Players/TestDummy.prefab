@@ -1259,8 +1259,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1901628103295967004}
   - component: {fileID: 5513492792936416614}
-  - component: {fileID: 5513492792936416612}
   - component: {fileID: -495521743752736585}
+  - component: {fileID: 5513492792936416612}
   - component: {fileID: 2608656649186225330}
   - component: {fileID: 5389627515386179965}
   - component: {fileID: 5513492792936416608}
@@ -1317,31 +1317,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5513492792936416612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1236273298684986790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c38e8a7d36773b9429652b832c2318bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: 
-  Mesh:
-  - {fileID: 2888166103678315232}
-  - {fileID: 1906068819429479440}
-  HeadRotator: {fileID: 2219367935826800787}
-  FpsCamPos: {fileID: 7724639626625837087}
-  DropPosition: {fileID: 4111679441254668521}
-  Hand: {fileID: 6304585239880122812}
-  FirstPersonCam: {fileID: 3214331607327904728}
-  ThirdPersonCam: {fileID: 1290591514262979390}
-  Body: []
-  FpsHands: {fileID: 7699991618337532576}
-  FpsLegs: {fileID: 5485596868135978636}
 --- !u!114 &-495521743752736585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1388,6 +1363,33 @@ MonoBehaviour:
   _isWalking: 0
   _isFalling: 0
   _isLanded: 0
+--- !u!114 &5513492792936416612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236273298684986790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c38e8a7d36773b9429652b832c2318bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Mesh:
+  - {fileID: 2888166103678315232}
+  - {fileID: 1906068819429479440}
+  HeadRotator: {fileID: 2219367935826800787}
+  FpsCamPos: {fileID: 7724639626625837087}
+  DropPosition: {fileID: 4111679441254668521}
+  Hand: {fileID: 6304585239880122812}
+  FirstPersonCam: {fileID: 3214331607327904728}
+  ThirdPersonCam: {fileID: 1290591514262979390}
+  Body: []
+  FpsHands: {fileID: 7699991618337532576}
+  FpsLegs: {fileID: 5485596868135978636}
+  headTarget: {fileID: 0}
+  leftHandTarget: {fileID: 0}
+  rightHandTarget: {fileID: 0}
 --- !u!114 &2608656649186225330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1533,7 +1535,7 @@ MonoBehaviour:
     m_Bits: 17
   SelectLayer:
     serializedVersion: 2
-    m_Bits: 704
+    m_Bits: 64
   HighlightLayer: 7
 --- !u!143 &5513492792936416608
 CharacterController:
