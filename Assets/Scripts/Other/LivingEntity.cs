@@ -10,8 +10,9 @@ public abstract class LivingEntity : MonoBehaviour
 
     public void GetDamage(float amount)
     {
+        print(Health);
         Health -= amount;
-        healthSlider.fillAmount = Health;
+        healthSlider.fillAmount = Health / 100;
         GotHit();
         if (Health <= 0)
         {

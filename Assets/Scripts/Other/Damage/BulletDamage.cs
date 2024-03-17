@@ -1,28 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Guizzan.Extensions;
 public class BulletDamage : MonoBehaviour
 {
-    public float radius;
-    private bool damageDealt = false;
+    public float MaxDamage;
+    public float MinDamage;
+    public LayerMask layer;
 
-    private void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        if (damageDealt)
-            return;
-
-        Vector3 damagePos = transform.position;
-        Collider[] colliders = Physics.OverlapSphere(damagePos, radius);
-
-        foreach (Collider hit in colliders)
+        print(other.name);
+        if (layer.ContainsLayer(other.gameObject.layer))
         {
-            if (hit.TryGetComponent<IDamageable>(out IDamageable damageable))
+            if (other.TryGetComponent(out LivingEntity entity))
             {
-                if (damageable != null)
-                    damageable.GetDamage();
-                damageDealt = true;
+                float amount = Random.Range(MinDamage, MaxDamage);
+                entity.GetDamage(amount);
+            }
+            else if (other.TryGetComponent(out IDamageable damageable))
+            {
+                damageable.GetDamage();
             }
         }
     }
+
 }

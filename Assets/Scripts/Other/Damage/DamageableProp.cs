@@ -12,15 +12,13 @@ public class DamageableProp : MonoBehaviour, IDamageable
         Vector3 explosionPos = transform.position;
         Collider[] colliders = Physics.OverlapSphere(explosionPos, radius);
         foreach (Collider hit in colliders)
-        {
+        { 
             if (hit.TryGetComponent<Rigidbody>(out Rigidbody rb))
             {
                 if (rb != null)
                     rb.isKinematic = false;
                 rb.AddExplosionForce(power, explosionPos, radius, 3.0F);
             }
-
-
         }
     }
 }

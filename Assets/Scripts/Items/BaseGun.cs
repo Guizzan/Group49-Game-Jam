@@ -21,6 +21,8 @@ public abstract class BaseGun : PoseOverride, IDropable, IGuizzanInputManager<Gu
     public float CasingForce = 1;
     public float sliderLimit = 1;
     public float sliderSpeed = 1;
+    public float MinDamage;
+    public float MaxDamage;
 
     public Vector3 RecoilConstraints;
     public float RecoilCounterForce;
@@ -120,14 +122,16 @@ public abstract class BaseGun : PoseOverride, IDropable, IGuizzanInputManager<Gu
 
         GameObject casing = Instantiate(AmmoCasingPrefab);
         casing.transform.position = CasingPoint.position;
-        casing.GetComponent<Rigidbody>().AddRelativeForce(Vector3.right * CasingForce);
+        casing.GetComponent<Rigidbody>().AddForce(Vector3.right * CasingForce);
         StartCoroutine(DelayedDestroy(casing, ArtifactsDestroyTime));
         Nozzle.GetComponent<ParticleSystem>().Play();
 
-        GameObject ammo = Instantiate(AmmoCasingPrefab);
+        GameObject ammo = Instantiate(AmmoPrefab);
         ammo.transform.position = Nozzle.position;
-        ammo.GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * AmmoForce);
-        StartCoroutine(DelayedDestroy(ammo, 1));
+        ammo.GetComponent<Rigidbody>().AddForce(transform.forward * AmmoForce);
+        ammo.GetComponent<BulletDamage>().MaxDamage = MaxDamage;
+        ammo.GetComponent<BulletDamage>().MinDamage = MinDamage;
+        StartCoroutine(DelayedDestroy(ammo, 5));
 
         _sliderTarget = _initialSlider + (Vector3.forward * sliderLimit);
         AddRecoil();
