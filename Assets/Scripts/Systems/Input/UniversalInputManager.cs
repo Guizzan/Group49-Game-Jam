@@ -15,6 +15,7 @@ public class GuizzanInputManager : MonoBehaviour
     [Header(">>>>>>>>>>>>> UI Parameters")]
     public UICanvas MenuUI;
     public UICanvas GameUI;
+    public UICanvas DeathMenuUI;
     public UICanvas PauseMenuUI;
 
     [Header(">>>>>>>>>>>>> Character Movement Parameters <<<<<<<<<<<<<")]
@@ -125,6 +126,10 @@ public class GuizzanInputManager : MonoBehaviour
                 GameUI.SetActive(true);
                 SetControls = PlayerControls;
                 break;
+            case InputModes.DeathMenuUI:
+                DeathMenuUI.SetActive(true);
+                SetControls = DeathMenuControls;
+                break;
         }
         Debug.Log($"[UIM] Input Mode changed from {oldMode} to {newMode}");
     }
@@ -168,6 +173,10 @@ public class GuizzanInputManager : MonoBehaviour
     private void Update() => SetControls?.Invoke();
 
     private void MenuControls()
+    {
+
+    }
+    private void DeathMenuControls()
     {
 
     }

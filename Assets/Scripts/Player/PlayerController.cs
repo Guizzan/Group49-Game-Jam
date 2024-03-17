@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour, IGuizzanInputManager<PlayerInputs
 {
     private GuizzanInputManager GIM;
     private Animator _animator;
+    public static PlayerController Instance;
 
     [Header(">>>>>>>>>>>>> Bools <<<<<<<<<<<<<")]
     public bool RootMotion = true;
@@ -84,6 +85,13 @@ public class PlayerController : MonoBehaviour, IGuizzanInputManager<PlayerInputs
     private Vector3 PlatformLastVel;
     private PlayerSoundManager _playerSoundManager;
     public RaycastHit SurfaceHit;
+
+    void Awake()
+    {
+        if (Instance != null)
+            Destroy(gameObject);
+        Instance = this;
+    }
     private void Start()
     {
         _platform = gameObject.AddComponent<MovingPlatformHandler>();
