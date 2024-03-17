@@ -8,19 +8,20 @@ public class BulletDamage : MonoBehaviour
     public float MinDamage;
     public LayerMask layer;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider col)
     {
-        print(other.name);
-        if (layer.ContainsLayer(other.gameObject.layer))
+        print(col.gameObject.layer);
+        if (layer.ContainsLayer(col.gameObject.layer))
         {
-            if (other.TryGetComponent(out LivingEntity entity))
+            print(col.gameObject.layer);
+            if (col.gameObject.TryGetComponent(out LivingEntity entity))
             {
                 float amount = Random.Range(MinDamage, MaxDamage);
                 entity.GetDamage(amount);
             }
-            else if (other.TryGetComponent(out IDamageable damageable))
+            else if (col.transform.GetTopMostParrent().TryGetComponent(out IDamageable damageable))
             {
-                damageable.GetDamage();
+                damageable.GetDamage(col.transform.position);
             }
         }
     }

@@ -8,4 +8,34 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MainScene.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
+  - enabled: 1
+    path: Assets/Scenes/ClassRoom.unity
+    guid: bdfb74077491e48e2ac4179b474b497a
+  - enabled: 1
+    path: Assets/Scenes/Koridor1.unity
+    guid: d03b6609d6d15a24286b8e2264720116
+  - enabled: 1
+    path: Assets/Scenes/LabClass.unity
+    guid: d449b62c84a7c054c96d473594d994bd
+  - enabled: 1
+    path: Assets/Scenes/WC.unity
+    guid: b1f6303c36948384d8761a2915c90d84
+  - enabled: 1
+    path: Assets/Scenes/CompClass.unity
+    guid: 8a2eba85c3302f34c96040f54e818afc
+  - enabled: 1
+    path: Assets/Scenes/Koridor2.unity
+    guid: e4812a48aa944dd459a6d12dd1eddebc
+  - enabled: 1
+    path: Assets/Scenes/Library.unity
+    guid: d643f4f17e9bc7a4697df16a2026e431
+  - enabled: 1
+    path: Assets/Scenes/Dining_Hall.unity
+    guid: ff68f06374cd28341b2a8e2fd81d78d0
+  - enabled: 1
+    path: Assets/Scenes/Koridor3.unity
+    guid: b4141d3f5091ed14487d02fcf2118d8c
+  - enabled: 1
+    path: Assets/Scenes/MudurOfis(BossRoom).unity
+    guid: 8a3b59e82dcce4e4fb540aff1b334c4d
   m_configObjects: {}

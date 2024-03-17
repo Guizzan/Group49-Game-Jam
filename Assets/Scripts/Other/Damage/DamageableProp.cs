@@ -7,7 +7,7 @@ public class DamageableProp : MonoBehaviour, IDamageable
     public float radius = 0.5F;
     public float power = 2.0F;
 
-    public void GetDamage()
+    public void GetDamage(Vector3 point)
     {
         Vector3 explosionPos = transform.position;
         Collider[] colliders = Physics.OverlapSphere(explosionPos, radius);
