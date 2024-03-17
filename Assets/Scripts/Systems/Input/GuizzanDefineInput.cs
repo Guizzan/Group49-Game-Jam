@@ -34,6 +34,7 @@ namespace Guizzan
                 MenuUI,
                 PauseMenuUI,
                 Player,
+                DeathMenuUI,
                 None
             }
             public enum Controller
