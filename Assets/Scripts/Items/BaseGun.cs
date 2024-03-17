@@ -6,9 +6,12 @@ using Guizzan.Input.GIM.Guns;
 using UnityEngine.UIElements;
 using System;
 using TreeEditor;
+using Guizzan.Input.GIM.Player;
+using static UnityEngine.Rendering.DebugUI;
 
-public abstract class BaseGun : MonoBehaviour
+public abstract class BaseGun : PoseOverride, IDropable, IGuizzanInputManager<GunInputs>, ICollectable
 {
+    public string GunName;
     public int MaxAmmo = 12;
     public bool isAutomatic = false;
     public float ShootingTime = 1;
@@ -16,29 +19,49 @@ public abstract class BaseGun : MonoBehaviour
     public float ArtifactsDestroyTime = 30;
     public float AmmoForce = 1;
     public float CasingForce = 1;
-    public float RecoilCounterForce;  
-    public float maxAngleDifference = 30f;
+    public float sliderLimit = 1;
+    public float sliderSpeed = 1;
+
+    public Vector3 RecoilConstraints;
+    public float RecoilCounterForce;
     public float RecoilForce;
+
     public GameObject AmmoPrefab;
     public GameObject AmmoCasingPrefab;
     public GameObject Magazine;
     public Transform Nozzle;
     public Transform CasingPoint;
+    public Transform Slider;
 
 
     [SerializeField]
     private int _currentAmmo = 12;
     private IEnumerator _curRoutine;
+
+    private Vector3 _initialSlider;
+    public Vector3 _sliderTarget;
     private Quaternion _initialRot;
-    private Vector3 _initialpos;
+    public Quaternion angularRecoil;
+
     [ButtonInvoke(nameof(Shoot), InputValue.Down)] public bool testShoot;
     [ButtonInvoke(nameof(Shoot), InputValue.Up)] public bool testStopShoot;
     [ButtonInvoke(nameof(Reload))] public bool testReload;
 
+    public GameObject dropPrefab;
+    public GameObject DropPrefab()
+    {
+        return dropPrefab;
+    }
     private void Start()
     {
         _initialRot = transform.localRotation;
-        _initialpos = transform.localPosition;
+        _initialSlider = Slider.transform.localPosition;
+    }
+    private void Update()
+    {
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, _initialRot * angularRecoil, Time.deltaTime * RecoilForce);
+        angularRecoil = Quaternion.Lerp(angularRecoil, Quaternion.identity, Time.deltaTime * RecoilCounterForce);
+        Slider.localPosition = Vector3.MoveTowards(Slider.localPosition, _sliderTarget, Time.deltaTime * sliderSpeed);
     }
 
     public void SetInput(GunInputs Input, InputValue value)
@@ -69,6 +92,15 @@ public abstract class BaseGun : MonoBehaviour
             if (_curRoutine != null)
             {
                 StopCoroutine(_curRoutine);
+                OnGunStateChanged(GunInputs.Shoot, InputValue.Up);
+                if (_currentAmmo <= 0)
+                {
+                    _sliderTarget = _initialSlider + (Vector3.forward * sliderLimit);
+                }
+                else
+                {
+                    _sliderTarget = _initialSlider;
+                }
                 _curRoutine = null;
             }
         }
@@ -78,10 +110,12 @@ public abstract class BaseGun : MonoBehaviour
     {
         if (_currentAmmo <= 0)
         {
+            OnGunStateChanged(GunInputs.AmmoFinished, InputValue.Down);
             _curRoutine = null;
+            _sliderTarget = _initialSlider + (Vector3.forward * sliderLimit);
             yield break;
         }
-        OnGunStateChanged(GunInputs.Shoot);
+        OnGunStateChanged(GunInputs.Shoot, InputValue.Down);
         _currentAmmo -= 1;
 
         GameObject casing = Instantiate(AmmoCasingPrefab);
@@ -89,14 +123,18 @@ public abstract class BaseGun : MonoBehaviour
         casing.GetComponent<Rigidbody>().AddRelativeForce(Vector3.right * CasingForce);
         StartCoroutine(DelayedDestroy(casing, ArtifactsDestroyTime));
         Nozzle.GetComponent<ParticleSystem>().Play();
-        Vector3 force = ((Vector3.up * UnityEngine.Random.Range(0.5f, 1)) + (Vector3.right * UnityEngine.Random.Range(-1, 1))) * RecoilForce;
-        GetComponent<Rigidbody>().AddForceAtPosition(force, Nozzle.transform.position);
+
         GameObject ammo = Instantiate(AmmoCasingPrefab);
         ammo.transform.position = Nozzle.position;
         ammo.GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * AmmoForce);
         StartCoroutine(DelayedDestroy(ammo, 1));
 
-        yield return new WaitForSeconds(ShootingTime);
+        _sliderTarget = _initialSlider + (Vector3.forward * sliderLimit);
+        AddRecoil();
+
+        yield return new WaitForSeconds(ShootingTime / 2);
+        _sliderTarget = _initialSlider;
+        yield return new WaitForSeconds(ShootingTime / 2);
         if (isAutomatic)
         {
             _curRoutine = ShootingRoutine();
@@ -105,14 +143,13 @@ public abstract class BaseGun : MonoBehaviour
         }
         _curRoutine = null;
     }
-
-    private void Update()
+    private void AddRecoil()
     {
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, _initialRot, Time.deltaTime * RecoilCounterForce);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, _initialpos, Time.deltaTime * RecoilCounterForce);
+        float randomAngleX = UnityEngine.Random.Range(-RecoilConstraints.x, RecoilConstraints.x);
+        float randomAngleY = UnityEngine.Random.Range(-RecoilConstraints.y, RecoilConstraints.y);
+        float randomAngleZ = UnityEngine.Random.Range(-RecoilConstraints.z, RecoilConstraints.z);
+        angularRecoil = Quaternion.Euler(randomAngleX, randomAngleY, randomAngleZ);
     }
-
-
     private void Reload()
     {
         _curRoutine = ReloadingRoutine();
@@ -122,15 +159,18 @@ public abstract class BaseGun : MonoBehaviour
     private IEnumerator ReloadingRoutine()
     {
         if (_currentAmmo == MaxAmmo) yield break;
-        GameObject instance = Instantiate(Magazine);
+        GameObject instance = Instantiate(Magazine, transform);
         Magazine.SetActive(false);
         instance.transform.position = Magazine.transform.position;
+        instance.transform.rotation = Magazine.transform.rotation;
+        instance.transform.parent = null;
         instance.AddComponent<Rigidbody>();
         StartCoroutine(DelayedDestroy(instance, ArtifactsDestroyTime));
-        OnGunStateChanged(GunInputs.Reload);
+        OnGunStateChanged(GunInputs.Reload, InputValue.Down);
         yield return new WaitForSeconds(ReloadingTime);
         _currentAmmo = MaxAmmo;
         _curRoutine = null;
+        _sliderTarget = _initialSlider;
         Magazine.SetActive(true);
     }
 
@@ -140,5 +180,10 @@ public abstract class BaseGun : MonoBehaviour
         if (instance != null)
             Destroy(instance);
     }
-    public abstract void OnGunStateChanged(GunInputs state);
+    public abstract void OnGunStateChanged(GunInputs state, InputValue value);
+
+    public string GetName()
+    {
+        return GunName;
+    }
 }

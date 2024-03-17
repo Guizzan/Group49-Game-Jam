@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Guizzan.Extensions;
+using static UnityEditor.Experimental.GraphView.GraphView;
+
 public class PlayerRaycaster : MonoBehaviour
 {
 
-    static public GameObject Selection;
-    public static bool EnableRaycast = true;
-    public static float ReachDistance = 5;
+    public static GameObject Selection;
+    public float ReachDistance = 5;
     public LayerMask RaycastLayer; [Tooltip("Layers that raycast can hit")]
     public LayerMask SelectLayer; [Tooltip("Layers that will be highlighted")]
     public int HighlightLayer; [Tooltip("Index of layer that makes objects highlighted")]
@@ -16,15 +17,17 @@ public class PlayerRaycaster : MonoBehaviour
     private Camera CameraMain;
     private GameObject cross;
     private int _oldLayer;
+    private PlayerController _player;
 
     private void Start()
     {
-        cross = GuizzanInputManager.Instance.GameUI.Canvas.transform.Find("Crosshair").gameObject;
+        _player = GetComponent<PlayerController>();
+        cross = _player.Crosshair;
         CameraMain = Camera.main;
     }
     void Update()
     {
-        if (!EnableRaycast)
+        if (!_player._isAiming)
         {
             if (Selection != null)
             {
@@ -39,7 +42,7 @@ public class PlayerRaycaster : MonoBehaviour
         Ray = CameraMain.ScreenPointToRay(new Vector2(cross.transform.position.x, cross.transform.position.y));
         if (Physics.Raycast(Ray, out Hit, ReachDistance, RaycastLayer))
         {
-            if (SelectLayer.ContainsLayer(Hit.collider.gameObject.layer)) _raycastObject = Hit.collider.gameObject;
+            if (SelectLayer.ContainsLayer(Hit.collider.gameObject.layer)) _raycastObject = Hit.collider.transform.GetTopMostParrent().gameObject;
             else Hit = new RaycastHit();
         }
         else Hit = new RaycastHit();

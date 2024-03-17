@@ -9,6 +9,18 @@ namespace Guizzan
     {
         public static class Extensions
         {
+            public static Transform GetTopMostParrent(this Transform transform)
+            {
+                Transform topmostParent = transform;
+
+                while (transform.parent != null)
+                {
+                    topmostParent = transform.parent;
+                    transform = transform.parent;
+                }
+
+                return topmostParent;
+            }
             public static T NextEnum<T>(this T src) where T : struct
             {
                 if (!typeof(T).IsEnum) throw new ArgumentException(String.Format("Argument {0} is not an Enum", typeof(T).FullName));

@@ -3,7 +3,7 @@ using UnityEngine;
 using Guizzan.Input.GIM;
 using Guizzan.Input.GIM.Player;
 
-public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInputs>
+public class PlayerController : MonoBehaviour, IGuizzanInputManager<PlayerInputs>
 {
     private GuizzanInputManager GIM;
     private Animator _animator;
@@ -21,6 +21,10 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     public Transform headTarget;
     public Transform leftHandTarget;
     public Transform rightHandTarget;
+    public GameObject AimCamera;
+    public GameObject Camera;
+    public GameObject OrbitCam;
+    public GameObject Crosshair;
 
     [HideInInspector]
     public float Speed;
@@ -52,8 +56,8 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     public float Smoothing = 2;
     public float UpLookLimit;
     public float DownLookLimit;
-    private Vector2 _currentMouseLook;
-    private Vector2 _appliedMouseDelta;
+    public Vector2 _currentMouseLook;
+    public Vector2 _appliedMouseDelta;
 
     [Header(">>>>>>>>>>>>> Runtime Parameters <<<<<<<<<<<<<")]
     public Vector3 _velocity;
@@ -64,6 +68,7 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
     public bool _isWalking;
     public bool _isFalling;
     public bool _isLanded;
+    public bool _isAiming;
     private bool _wasFalling;
     private float startFallTime;
     private float _crouchHeight;
@@ -150,6 +155,23 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
         }
         HeadRotator.transform.localRotation = Quaternion.AngleAxis(-_currentMouseLook.y, Vector3.right);
         transform.localRotation = Quaternion.AngleAxis(_currentMouseLook.x, Vector3.up);
+
+        if (!_isRunning && !_isWalking && !_isAiming)
+        {
+            OrbitCam.SetActive(true);
+            Camera.SetActive(false);
+            AimCamera.SetActive(false);
+            Crosshair.SetActive(false);
+            enableLook= false;
+        }
+        else if (OrbitCam.activeInHierarchy)
+        {
+            OrbitCam.SetActive(false);
+            Camera.SetActive(!_isAiming);
+            AimCamera.SetActive(_isAiming);
+            enableLook = true;
+        }
+
         if (!RootMotion && !godMode)
             _rootMotion += ((transform.forward * _AnimationLerp.y) + (transform.right * _AnimationLerp.x)) / Time.deltaTime * 0.00025f * Speed;
     }
@@ -329,6 +351,24 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
                 }
                 if (_isCrouching) _isRunning = false;
                 break;
+            case PlayerInputs.CamMode:
+                switch (value)
+                {
+                    case InputValue.Up:
+                        Camera.SetActive(true);
+                        AimCamera.SetActive(false);
+                        Crosshair.SetActive(false);
+                        _isAiming = false;
+                        break;
+                    case InputValue.Down:
+                        Camera.SetActive(false);
+                        AimCamera.SetActive(true);
+                        Crosshair.SetActive(true);
+                        _isAiming = true;
+                        break;
+                }
+                break;
+
         }
 
     }
@@ -345,7 +385,7 @@ public class PlayerController : MonoBehaviour, IUniversalInputManager<PlayerInpu
 
     private void Jump()
     {
-        if (!ApplyGravity && JumpRoutine == null && enablePhysics &&  enableMove)
+        if (!ApplyGravity && JumpRoutine == null && enablePhysics && enableMove)
         {
             ApplyGravity = true;
             _isJumping = true;

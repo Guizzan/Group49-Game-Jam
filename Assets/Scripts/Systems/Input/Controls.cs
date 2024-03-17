@@ -127,6 +127,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""86c18624-1635-457d-ad7c-34e5595add3e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Scroll"",
                     ""type"": ""Value"",
                     ""id"": ""431118bf-a9bd-4683-b7b5-de97cd193795"",
@@ -569,6 +578,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""GodMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5f8e58c7-451b-4faf-8645-3d80a84a2458"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard And Mouse"",
+                    ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1084,6 +1104,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_CrouchToggle = m_Player.FindAction("CrouchToggle", throwIfNotFound: true);
         m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
         m_Player_GetItem = m_Player.FindAction("GetItem", throwIfNotFound: true);
+        m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Scroll = m_Player.FindAction("Scroll", throwIfNotFound: true);
         m_Player_NextSlot = m_Player.FindAction("NextSlot", throwIfNotFound: true);
         m_Player_PreviousSlot = m_Player.FindAction("PreviousSlot", throwIfNotFound: true);
@@ -1179,6 +1200,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_CrouchToggle;
     private readonly InputAction m_Player_PauseMenu;
     private readonly InputAction m_Player_GetItem;
+    private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_Scroll;
     private readonly InputAction m_Player_NextSlot;
     private readonly InputAction m_Player_PreviousSlot;
@@ -1203,6 +1225,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @CrouchToggle => m_Wrapper.m_Player_CrouchToggle;
         public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
         public InputAction @GetItem => m_Wrapper.m_Player_GetItem;
+        public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @Scroll => m_Wrapper.m_Player_Scroll;
         public InputAction @NextSlot => m_Wrapper.m_Player_NextSlot;
         public InputAction @PreviousSlot => m_Wrapper.m_Player_PreviousSlot;
@@ -1254,6 +1277,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @GetItem.started += instance.OnGetItem;
             @GetItem.performed += instance.OnGetItem;
             @GetItem.canceled += instance.OnGetItem;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
             @Scroll.started += instance.OnScroll;
             @Scroll.performed += instance.OnScroll;
             @Scroll.canceled += instance.OnScroll;
@@ -1318,6 +1344,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @GetItem.started -= instance.OnGetItem;
             @GetItem.performed -= instance.OnGetItem;
             @GetItem.canceled -= instance.OnGetItem;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
             @Scroll.started -= instance.OnScroll;
             @Scroll.performed -= instance.OnScroll;
             @Scroll.canceled -= instance.OnScroll;
@@ -1598,6 +1627,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnCrouchToggle(InputAction.CallbackContext context);
         void OnPauseMenu(InputAction.CallbackContext context);
         void OnGetItem(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
         void OnNextSlot(InputAction.CallbackContext context);
         void OnPreviousSlot(InputAction.CallbackContext context);

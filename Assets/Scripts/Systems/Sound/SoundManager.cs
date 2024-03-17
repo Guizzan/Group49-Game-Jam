@@ -66,6 +66,14 @@ public class SoundManager : MonoBehaviour
         BasePlaySound(out GameObject Instance, name, loop, volume, true);
         Instance.transform.position = position;
     }
+    public static void PlaySoundOnCollision(GameObject collisionObject, string name, string tag = null, bool loop = false, float volume = 1, float destroyAfter = 10)
+    {
+        SoundOnCollision script = collisionObject.AddComponent<SoundOnCollision>();
+        destroyAfter += GetSound(name).Sound.length;
+        script.Sound = name;
+        script.TagFilter = tag;
+        script.DestroyAfter = destroyAfter;
+    }
 
     #region Really private functions
     private static SoundInfo GetSound(string name)

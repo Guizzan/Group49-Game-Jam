@@ -57,7 +57,8 @@ namespace Guizzan
                 public enum GunInputs
                 {
                     Shoot,
-                    Reload
+                    Reload,
+                    AmmoFinished
                 }
             }
         }

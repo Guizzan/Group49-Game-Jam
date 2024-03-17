@@ -6,6 +6,8 @@ using System.Linq;
 using UnityEngine.UI;
 
 using InputValue = Guizzan.Input.GIM.InputValue;
+using TMPro;
+using Guizzan.Input.GIM.Guns;
 
 [RequireComponent(typeof(PlayerInput))]
 public class GuizzanInputManager : MonoBehaviour
@@ -227,14 +229,12 @@ public class GuizzanInputManager : MonoBehaviour
         {
             if (_controls.Player.PrimaryButton.phase == InputActionPhase.Performed)
             {
-
-                
+                PickUpItem._currentItem?.GetComponent<IGuizzanInputManager<GunInputs>>().SetInput(GunInputs.Shoot, InputValue.Down);
             }
 
             if (_controls.Player.PrimaryButton.phase == InputActionPhase.Waiting) // Button Up
             {
-
-
+                PickUpItem._currentItem?.GetComponent<IGuizzanInputManager<GunInputs>>().SetInput(GunInputs.Shoot, InputValue.Up);
             }
         }
 
@@ -243,12 +243,20 @@ public class GuizzanInputManager : MonoBehaviour
         {
             if (_controls.Player.SecondaryButton.phase == InputActionPhase.Performed) // Button Down
             {
-
+                _playerController.SetInput(PlayerInputs.CamMode, InputValue.Down);
             }
 
             if (_controls.Player.SecondaryButton.phase == InputActionPhase.Waiting) // Button Up
             {
+                _playerController.SetInput(PlayerInputs.CamMode, InputValue.Up);
+            }
 
+        }
+        if (_controls.Player.Reload.triggered)
+        {
+            if (_controls.Player.Reload.phase == InputActionPhase.Performed) // Button Down
+            {
+                PickUpItem._currentItem?.GetComponent<IGuizzanInputManager<GunInputs>>().SetInput(GunInputs.Reload, InputValue.Down);
             }
 
         }
@@ -257,11 +265,7 @@ public class GuizzanInputManager : MonoBehaviour
         {
             if (_controls.Player.GetItem.phase == InputActionPhase.Performed) // Button Down
             {
-                if (PlayerRaycaster.Selection != null)
-                {
-                    //TODO : Get Item
-
-                }
+                _playerController.GetComponent<PickUpItem>().GetItem();
             }
         }
 
@@ -269,7 +273,7 @@ public class GuizzanInputManager : MonoBehaviour
         {
             if (_controls.Player.Drop.phase == InputActionPhase.Performed) // Button Down
             {
-                //TODO : Drop Item
+                _playerController.GetComponent<PickUpItem>().DropItem();
             }
         }
 
