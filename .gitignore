@@ -73,3 +73,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 Assets/Nokobot/Modern Guns - Handgun/URP/ModernGuns_Handgun_v1.2_URP.unitypackage.meta
+*.meta
