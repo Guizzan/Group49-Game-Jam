@@ -1,13 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Guizzan.Input.GIM;
 using Guizzan.Input.GIM.Guns;
-using UnityEngine.UIElements;
-using System;
-using TreeEditor;
-using Guizzan.Input.GIM.Player;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public abstract class BaseGun : PoseOverride, IDropable, IGuizzanInputManager<GunInputs>, ICollectable
 {

@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/ClassRoomNormal.unity
+    guid: f987b971b1b7311498d0faa714a6955c
+  - enabled: 1
+    path: Assets/Scenes/Map.unity
+    guid: 406ec55738b8360429a7f6f39e7f5ec3
+  - enabled: 1
     path: Assets/Scenes/ClassRoom.unity
     guid: bdfb74077491e48e2ac4179b474b497a
   - enabled: 1

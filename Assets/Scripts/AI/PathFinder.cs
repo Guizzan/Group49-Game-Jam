@@ -75,7 +75,6 @@ public abstract class PathFinder : MonoBehaviour
         if (agent.remainingDistance <= agent.stoppingDistance)
         {
             _velocity = Vector2.Lerp(Vector2.zero, _velocity, agent.remainingDistance / agent.stoppingDistance);
-            print(Vector3.Distance(transform.position, _targetPos));
             if (Vector3.Distance(transform.position, _targetPos) <= StoppingRadius)
             {
                 PathCompleted();
