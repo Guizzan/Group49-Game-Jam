@@ -3,6 +3,9 @@
 ## Description
 This project is a game developed by a team of three individuals - Furkan Duyan, Arda Akdemir, and Tarık Köşker. The game was created during Google's Game Developing Academy game jam.
 
+## Trailer
+https://www.youtube.com/watch?v=94a1PE8mQcQ
+
 ## Installation
 To run this project locally, follow these steps:
 1. Go to builds tab
