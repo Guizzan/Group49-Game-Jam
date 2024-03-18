@@ -13,7 +13,6 @@ public class BulletDamage : MonoBehaviour
         print(col.gameObject.layer);
         if (layer.ContainsLayer(col.gameObject.layer))
         {
-            print(col.gameObject.layer);
             if (col.gameObject.TryGetComponent(out LivingEntity entity))
             {
                 float amount = Random.Range(MinDamage, MaxDamage);

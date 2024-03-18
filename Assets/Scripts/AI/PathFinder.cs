@@ -30,7 +30,7 @@ public abstract class PathFinder : MonoBehaviour
         switch (path.status)
         {
             case NavMeshPathStatus.PathComplete:
-                //Debug.Log("Path is valid! Destination point: " + agent.destination);
+                Debug.Log("Path is valid! Destination point: " + agent.destination);
                 agent.SetPath(path);
                 _pathCompleted = false;
                 _targetPos = pos;
@@ -39,9 +39,11 @@ public abstract class PathFinder : MonoBehaviour
                 _invalidPath = false;
                 break;
             case NavMeshPathStatus.PathInvalid:
+                Debug.Log("Invalid Path!");
                 _invalidPath = true;
                 break;
             case NavMeshPathStatus.PathPartial:
+                Debug.Log("Partial Path!");
                 _invalidPath = true;
                 break;
         }

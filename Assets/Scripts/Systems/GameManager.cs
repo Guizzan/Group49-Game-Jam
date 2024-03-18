@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         LoadScenes();
+        SoundManager.PlaySound("AmbientSound", true, 0.025f);
     }
 
     void LoadScenes()
