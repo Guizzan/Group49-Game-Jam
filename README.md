@@ -1,4 +1,4 @@
-# Game Jam Project
+# Savior Hamster
 
 ## Description
 This project is a game developed by a team of three individuals - Furkan Duyan, Arda Akdemir, and Tarık Köşker. The game was created during Google's Game Developing Academy game jam.
